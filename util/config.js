@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 module.exports = {
-    SECRET: 'sdflk',
+    SECRET: 'secrets',
     PG_PASSWORD: process.env.PG_PASSWORD,
     PG_USERNAME: process.env.PG_USERNAME,
     PG_HOSTNAME: process.env.PG_HOSTNAME,
