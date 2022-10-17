@@ -3,8 +3,20 @@ const router = require('express').Router()
 const { Blog } = require('../models')
 
 const blogFinder = async (req, res, next) => {
-    req.blog = await Blog.findByPk(req.params.id)
-    next()
+    req.blog = await Blog.findByPk(req.params.id)//.catch(error => next(error))
+    if (req.blog) {
+        next()
+    } else {
+        next({"message": "malformatted id"})    
+    }
+}
+
+const errorHandler = (error, req, res, next) => {
+    console.error(error.message)
+
+    //if (error.name === 'CastError') {
+        return res.status(400).send({ error: 'malformatted id' })
+    //}
 }
 
 router.get('/', async (req, res) => {
@@ -14,12 +26,8 @@ router.get('/', async (req, res) => {
     res.json(blogs)
 })
 
-router.get('/:id', blogFinder, async (req, res) => {
-    if (req.blog) {
-        res.json(req.blog)
-    } else {
-        res.status(404).end()
-    }
+router.get('/:id', blogFinder, errorHandler, async (req, res) => {
+    res.json(req.blog)
 })
 
 router.post('/', async (req, res) => {
@@ -31,23 +39,14 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.delete('/:id', blogFinder, async (req, res) => {
-    if (req.blog) {
-        await req.blog.destroy()
-    }
-    res.status(204).end()
+router.delete('/:id', blogFinder, errorHandler, async (req, res) => {
+    await req.blog.destroy()
 })
 
-router.put('/:id', blogFinder, async (req, res) => {
-    if (req.blog) {
-        req.blog.likes = req.body.likes
-        //console.log(req.body)
-        //console.log(req.params)
-        await req.blog.save()
-        res.json(req.blog)
-    } else {
-        res.status(404).end()
-    }
+router.put('/:id', blogFinder, errorHandler, async (req, res) => {
+    req.blog.likes = req.body.likes
+    await req.blog.save()
+    res.json(req.blog)
 })
 
 module.exports = router
