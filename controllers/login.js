@@ -34,3 +34,6 @@ router.post('/', async (request, response) => {
 })
 
 module.exports = router
+
+/*Exercise 13.10.
+the current logged-in user identified by a token is linked to each blog added.*/
