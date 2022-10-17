@@ -2,17 +2,18 @@ const router = require('express').Router()
 
 const { User } = require('../models')
 
+
 router.get('/', async (req, res) => {
     const users = await User.findAll()
     res.json(users)
 })
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
     try {
         const user = await User.create(req.body)
         res.json(user)
     } catch (error) {
-        return res.status(400).json({ error })
+        next(error)
     }
 })
 
@@ -41,5 +42,16 @@ router.put('/:username', async (req, res) => {
         res.status(404).end()
     }
 })
+
+const errorHandler = (error, req, res, next) => {
+    //console.error(error.message)
+
+    if (error.name === 'SequelizeValidationError') {
+        return res.status(400).send({ error: 'Username must be a valid email address' })
+    }
+    return res.status(400).send({ error: 'Something went wrong' })
+}
+
+router.use(errorHandler)
 
 module.exports = router
