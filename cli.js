@@ -43,11 +43,52 @@ Blog.init({
     modelName: 'blog'
 })
 
-async function fetch() {
-    const blogs = await Blog.findAll()
-    for (blog of blogs) {
-        console.log(blog.dataValues.author + ': \'' + blog.dataValues.title + '\', ' + blog.dataValues.likes + ' likes')
-    }
-}
+Blog.sync()
 
-fetch()
+app.get('/api/blogs', async (req, res) => {
+    const blogs = await Blog.findAll()
+    //console.log(notes.map(n=>n.toJSON()))
+    console.log(JSON.stringify(blogs, null, 2))
+    res.json(blogs)
+})
+
+/*app.get('/api/notes/:id', async (req, res) => {
+    const note = await Note.findByPk(req.params.id)
+    if (note) {
+        console.log(note.toJSON())
+        res.json(note)
+    } else {
+        res.status(404).end()
+    }
+})*/
+
+app.post('/api/blogs', async (req, res) => {
+    try {
+        const blog = await Blog.create(req.body)
+        return res.json(blog)
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+})
+
+app.delete('/api/blogs/:id', async (req, res) => {
+    const count = await Blog.destroy({ where: { id: req.params.id } })
+    console.log(count)
+})
+
+
+/*app.put('/api/notes/:id', async (req, res) => {
+    const note = await Note.findByPk(req.params.id)
+    if (note) {
+        note.important = req.body.important
+        await note.save()
+        res.json(note)
+    } else {
+        res.status(404).end()
+    }
+})*/
+
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+})
