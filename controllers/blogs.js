@@ -6,7 +6,12 @@ const { SECRET } = require('../util/config')
 const { Blog, User } = require('../models')
 
 const blogFinder = async (req, res, next) => {
-    req.blog = await Blog.findByPk(req.params.id)//.catch(error => next(error))
+    req.blog = await Blog.findByPk(req.params.id, {
+        include: {
+            model: User,
+            attributes: ['username']
+        }
+    })
     if (req.blog) {
         next()
     } else {
@@ -17,7 +22,7 @@ const blogFinder = async (req, res, next) => {
 const tokenExtractor = (req, res, next) => {
     const authorization = req.get('authorization')
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-        console.log(authorization.substring(7))
+        //console.log(authorization.substring(7))
         //console.log(SECRET)
         try {
             req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
@@ -65,8 +70,12 @@ router.post('/', tokenExtractor, async (req, res) => {
     }
 })
 
-router.delete('/:id', blogFinder, errorHandler, async (req, res) => {
-    await req.blog.destroy()
+router.delete('/:id', blogFinder, tokenExtractor, errorHandler, async (req, res) => {
+    if (req.decodedToken.username == req.blog.toJSON().user.username) {
+        await req.blog.destroy()
+    } else {
+        return res.status(400).json({ error: 'only user who added the blog can delete it' })
+    }
 })
 
 router.put('/:id', blogFinder, errorHandler, async (req, res) => {
