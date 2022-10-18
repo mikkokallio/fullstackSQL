@@ -100,7 +100,7 @@ router.delete('/:id', blogFinder, tokenExtractor, errorHandler, async (req, res)
 })
 
 router.put('/:id', blogFinder, errorHandler, async (req, res) => {
-    req.blog.likes = req.body.likes
+    req.blog.likes = parseInt(req.body.likes)
     await req.blog.save()
     res.json(req.blog)
 })

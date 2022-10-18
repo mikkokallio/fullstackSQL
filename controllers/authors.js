@@ -1,39 +1,18 @@
 const router = require('express').Router()
 const { Op } = require('sequelize')
-const { Blog, User } = require('../models')
+const { Blog } = require('../models')
+const { sequelize } = require('../util/db')
 
 router.get('/', async (req, res) => {
-    let search = req.query.search
-    let condition = null
-    if (search) {
-        condition = {
-            [Op.or]: [
-                {
-                    title: {
-                        [Op.substring]: search
-                    }
-                },
-                {
-                    author: {
-                        [Op.substring]: search
-                    }
-                }
-            ]
-        }    
-    }
+    const authors = await Blog.findAll({
+        attributes: ['author',
+            [sequelize.fn('count', sequelize.col('id')), 'blogs'],
+            [sequelize.fn('sum', sequelize.col('likes')), 'likes']
+        ],
+        group: [['author']],
+    }).catch(e => console.log(e))
 
-    const blogs = await Blog.findAll({
-        order: [['likes', 'DESC']],
-        attributes: { exclude: ['userId'] },
-        include: {
-            model: User,
-            attributes: ['name']
-        },
-        where: condition
-    })
-
-    console.log(JSON.stringify(blogs, null, 2))
-    res.json(blogs)
+    res.json(authors)
 })
 
 module.exports = router
