@@ -25,10 +25,11 @@ router.post('/', async (req, res, next) => {
 router.get('/:id', async (req, res) => {
     const user = await User.findByPk(req.params.id, {
         attributes: ['username', 'name'],
-        include: {
+        include: [{
             model: Blog,
             attributes: ['id', 'url', 'title', 'author', 'likes', 'yearWritten'],
-        }
+        },
+        ]
     })
     if (user) {
         res.json(user)

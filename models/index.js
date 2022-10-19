@@ -4,11 +4,15 @@ const Reading = require('./reading')
 
 User.hasMany(Blog)
 Blog.belongsTo(User)
-//Blog.sync({ alter: true })
-//User.sync({ alter: true })
 
-//User.belongsToMany(Blog, { through: Reading })
+User.belongsToMany(Blog, { through: Reading })
 Blog.belongsToMany(User, { through: Reading })
+
+User.hasMany(Reading)
+Reading.belongsTo(User)
+//Blog.hasMany(Reading)
+//Reading.belongsTo(Blog)
+
 module.exports = {
   Blog, User, Reading
 }
