@@ -55,12 +55,3 @@ Blog.init({
 })
 
 module.exports = Blog
-
-/*Expand your application (by migration) 
-so that the blogs have a year written attribute, 
-i.e. a field year which is an integer 
-at least equal to 1991 but not greater 
-than the current year. 
-Make sure the application gives an appropriate 
-error message if an incorrect value 
-is attempted to be given for a year written.*/
