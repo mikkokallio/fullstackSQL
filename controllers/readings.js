@@ -54,7 +54,6 @@ router.post('/', async (req, res) => {
             console.log('nöy!')
             //Error('Not found!')
         }
-
         
     } catch (error) {
         console.log(error)
@@ -62,10 +61,19 @@ router.post('/', async (req, res) => {
     }
 })
 
-/*router.put('/:id', blogFinder, errorHandler, async (req, res) => {
-    req.blog.likes = parseInt(req.body.likes)
-    await req.blog.save()
-    res.json(req.blog)
-})*/
+router.put('/:id', tokenExtractor, async (req, res) => {
+    try {
+        const user = await User.findByPk(req.decodedToken.id)
+        let reading = await Reading.findByPk(req.params.id)
+        console.log(req)
+        if (reading.userId == user.id && req.body.read) {
+            reading.read = true
+            await reading.save()
+            return res.json(reading)    
+        }
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+})
 
 module.exports = router
