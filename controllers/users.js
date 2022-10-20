@@ -32,7 +32,12 @@ router.get('/:id', async (req, res) => {
         ]
     })
     if (user) {
-        res.json(user)
+        if (req.query.read) {
+            const result = user.blogs.filter((blog) => blog.reading.read == (req.query.read == 'true' ? true : false))
+            res.json({ 'username': user.username, 'name': user.name, 'blogs': result })
+        } else {
+            res.json(user)
+        }
     } else {
         res.status(404).end()
     }
