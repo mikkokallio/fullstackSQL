@@ -5,6 +5,21 @@ const { SECRET } = require('../util/config')
 const User = require('../models/user')
 const Session = require('../models/session')
 
+router.delete('/', async (req, res) => {
+  const authorization = req.get('authorization').substring(7)
+  const token = await Session.findOne({
+    where: {
+      token: authorization
+    }
+  })
+
+  if (token) {
+    await token.destroy()
+  } else {
+    return res.status(400).json({ error: 'no session' })
+  }
+})
+
 router.post('/', async (request, response) => {
   const body = request.body
 
