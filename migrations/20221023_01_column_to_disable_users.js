@@ -12,12 +12,3 @@ module.exports = {
         await queryInterface.removeColumn('users', 'disabled')
     },
 }
-
-/*
-
-a boolean value column in the user table to indicate whether the user is disabled
-
-it is sufficient to disable and enable users directly from the database
-
-
-*/
